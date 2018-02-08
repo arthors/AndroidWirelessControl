@@ -33,12 +33,10 @@ def reSet():
 def judgeConnect():
 	res = subprocess.Popen('adb devices',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True)
 	result = res.stdout.readlines()
-	print len(result)
+#	print len(result)
 	return len(result)
 
 def mkUSBcut():
-	
-	
 	time.sleep(1)	
 	if judgeConnect()==2:
 		print "OK"
@@ -46,10 +44,18 @@ def mkUSBcut():
 		print "you should cut down USB"
 		mkUSBcut()		
 
+def mkUSBCon():
+	time.sleep(0.5)
+	if judgeConnect()!=2:
+		print "OK"
+	else:
+		print "you should connect USB cable"
+		mkUSBCon()
 
-if __name__ == '__main__':
-	
+def main():
+#	mkUSBCon()
 	reSet()
+	mkUSBCon()
 	ips=getIP()
 	print ips
 	print "you should cut down USB"
@@ -57,3 +63,6 @@ if __name__ == '__main__':
 	time.sleep(5)	
 	print connectDevice(ips)
 
+
+if __name__ == '__main__':
+	main()	
