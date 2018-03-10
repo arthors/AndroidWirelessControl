@@ -2,16 +2,30 @@ import os
 import subprocess
 import re
 import time
+import ast
+
+def getDeviceVersion():
+	res = subprocess.Popen('adb shell getprop ro.build.version.release', shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+	res1 = str(res.stdout.readlines()[0])
+	print res1 
+	return res1
+
 
 def getIP():
-	reip = re.compile(r'inet addr:(?<![\.\d])(?:\d{1,3}\.){3}\d{1,3}(?![\.\d])')
+	if (ast.literal_eval(getDeviceVersion())<6.0):
+		reip = re.compile(r'ip (?<![\.\d])(?:\d{1,3}\.){3}\d{1,3}(?![\.\d])')
+	else:	
+		reip = re.compile(r'inet addr:(?<![\.\d])(?:\d{1,3}\.){3}\d{1,3}(?![\.\d])')
 #	res = subprocess.Popen('adb shell ifconfig wlan0',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True)
 	res = subprocess.Popen('adb shell ifconfig wlan0',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 	result = str(res.stdout.readlines())
 	print result
 	for ip in reip.findall(result):
 		print ip
-	ip=ip[10:]
+	if (float(getDeviceVersion())<6.0):
+		ip=ip[3:]
+	else:
+		ip=ip[10:]
 	print ip
 	if not ip.strip()=="":
 		print "OK"
@@ -43,7 +57,7 @@ def judgeConnect():
 def mkUSBcut():
 	time.sleep(1)	
 	if judgeConnect()==2:
-		print "OK"
+		print "Successed to cut USB"
 	else:
 		print "you should cut down USB"
 		mkUSBcut()		
@@ -51,7 +65,7 @@ def mkUSBcut():
 def mkUSBCon():
 	time.sleep(0.5)
 	if judgeConnect()!=2:
-		print "OK"
+		print "Successed Connection"
 	else:
 		print "you should connect USB cable"
 		mkUSBCon()
