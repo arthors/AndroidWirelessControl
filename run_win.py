@@ -70,12 +70,19 @@ def mkUSBCon():
 		print "you should connect USB cable"
 		mkUSBCon()
 
+def storeIP(ip):
+	res = subprocess.Popen('adb shell getprop ro.serialno',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+	result = res.stdout.readlines()[0]
+	print str(result).strip()+"="+ip
+
+
+
 def main():
 #	mkUSBCon()
 	reSet()
 	mkUSBCon()
 	ips=getIP()
-	print ips
+	storeIP(ips)
 	print "you should cut down USB"
 	mkUSBcut()
 	time.sleep(5)	
