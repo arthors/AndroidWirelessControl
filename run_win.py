@@ -4,22 +4,37 @@ import re
 import time
 import ast
 
-def writeFile(line):
-	f1 = open('list', 'a+')
+def writeFile(files,line):
+	f1 = open(files, 'a+')
 	f1.write(line)
 	f1.close()
 
 
 def readFile(files,SN,ip,MAC):
-	f1 = open(files, 'a+')
-	for line in f1.readlines():
-		sn = line.split(line,'=')
-		if (SN == sn):
-			f1.write(SN+"="+ip+"="+MAC)
-		else:
-			writeFile(SN+"="+ip+"="+MAC)
-	f1.close()			
-	
+#	judge whether files name exists in workspace:
+#	if not existe make new file
+#	else write new config into file
+	if not os.path.exists(files):
+		print "first connection and file record"
+		writeFile(files,(SN+"="+ip+"="+MAC))
+	else:
+#	start find old record and renew it;
+		print "This is a configured device and renew its record"
+		f1 = open(files, 'w+')
+		for line in f1.readlines():
+			sn = line.split(line,'=')
+			if (SN == sn):
+				
+				f1.write("\r"+SN+"="+ip+"="+MAC)
+			else:
+				break;
+		f1.close()			
+#	finish find old record and renew it;
+#	start add new record;
+		f1 = open(files, 'a+')			
+		f1.write(SN+"="+ip+"="+MAC)
+		f1.close()
+#	finish add new record;
 
 def getDeviceVersion():
 	res = subprocess.Popen('adb shell getprop ro.build.version.release', shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
