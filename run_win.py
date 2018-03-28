@@ -9,31 +9,60 @@ def writeFile(files,line):
 	f1.write(line)
 	f1.close()
 
+def replaceline(files,oldline,newline):
+	f = open(files,'r')
+	f_new = open('tmp','w')
+	for line in f:
+#	judge file line
+    		if oldline in line:
+        		line = line.replace(oldline,newline.strip('\n'))
+#	replace oldline into newline
+		f_new.write(line)
+	f.close()
+	f_new.close()
+	os.rename("tmp",files)
+
+
 
 def readFile(files,SN,ip,MAC):
 #	judge whether files name exists in workspace:
 #	if not existe make new file
 #	else write new config into file
+	flg=0;
 	if not os.path.exists(files):
 		print "first connection and file record"
 		writeFile(files,(SN+"="+ip+"="+MAC))
 	else:
 #	start find old record and renew it;
-		print "This is a configured device and renew its record"
-		f1 = open(files, 'w+')
-		for line in f1.readlines():
-			sn = line.split(line,'=')
+#		print "check whether configured"
+		f0 = open(files, 'r+')
+		print "open file"
+		for line in f0.readlines():
+			linestr = line.strip()
+#			print linestr
+		###  need to check 	
+			sn = linestr.split('=')[0]
 			if (SN == sn):
-				
-				f1.write("\r"+SN+"="+ip+"="+MAC)
+				print "get old record and renew it"
+				## todo: delete this line;
+				linestr2 = str(SN)+'='+str(ip)+'='+str(MAC)	
+#				linestr2 = linestr.replace(ip,linestr.split('=')[1])
+#				linestr2 = linestr.replace(MAC,linestr.split('=')[2])
+				replaceline(files,linestr,linestr2)
+#				f0.write(linestr2)
+				flg=1;
 			else:
+				if line:
+					continue;
+				print "new connection and record it"
 				break;
-		f1.close()			
+		f0.close()			
 #	finish find old record and renew it;
 #	start add new record;
-		f1 = open(files, 'a+')			
-		f1.write(SN+"="+ip+"="+MAC)
-		f1.close()
+		if flg == 0:
+			f1 = open(files, 'a+')			
+			f1.write(SN+"="+ip+"="+MAC)
+			f1.close()
 #	finish add new record;
 
 def getDeviceVersion():
