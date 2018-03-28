@@ -27,40 +27,37 @@ def replaceline(files,oldline,newline):
 def readFile(files,SN,ip,MAC):
 #	judge whether files name exists in workspace:
 #	if not existe make new file
-#	else write new config into file
+#	else write new configline into file
 	flg=0;
+#	if first connection make file and store it; 	
 	if not os.path.exists(files):
 		print "first connection and file record"
 		writeFile(files,(SN+"="+ip+"="+MAC))
 	else:
 #	start find old record and renew it;
-#		print "check whether configured"
 		f0 = open(files, 'r+')
 		print "open file"
 		for line in f0.readlines():
 			linestr = line.strip()
-#			print linestr
-		###  need to check 	
+#	find the Serial Numble if exist in file replace it;
 			sn = linestr.split('=')[0]
 			if (SN == sn):
 				print "get old record and renew it"
-				## todo: delete this line;
 				linestr2 = str(SN)+'='+str(ip)+'='+str(MAC)	
-#				linestr2 = linestr.replace(ip,linestr.split('=')[1])
-#				linestr2 = linestr.replace(MAC,linestr.split('=')[2])
 				replaceline(files,linestr,linestr2)
-#				f0.write(linestr2)
 				flg=1;
 			else:
+#	if not go to end of file then continue;
 				if line:
 					continue;
+#	make sure this is a new connection then break to store it;
 				print "new connection and record it"
 				break;
 		f0.close()			
 #	finish find old record and renew it;
 #	start add new record;
 		if flg == 0:
-			f1 = open(files, 'a+')			
+			f1 = open(files, 'a+')
 			f1.write(SN+"="+ip+"="+MAC)
 			f1.close()
 #	finish add new record;
@@ -128,7 +125,7 @@ def mkUSBcut():
 		mkUSBcut()		
 
 def mkUSBCon():
-	time.sleep(0.5)
+	time.sleep(1)
 	if judgeConnect()!=2:
 		print "Successed Connection"
 	else:
