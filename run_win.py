@@ -65,7 +65,7 @@ def readFile(files,SN,ip,MAC):
 def getDeviceVersion():
 	res = subprocess.Popen('adb shell getprop ro.build.version.release', shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 	res1 = str(res.stdout.readlines()[0])
-	print res1 
+#	print res1 
 	return res1
 
 def getMAC():
@@ -81,7 +81,7 @@ def getIP():
 #	res = subprocess.Popen('adb shell ifconfig wlan0',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True)
 	res = subprocess.Popen('adb shell ifconfig wlan0',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 	result = str(res.stdout.readlines())
-	print result
+#	print result
 	for ip in reip.findall(result):
 		print ip
 	if (float(getDeviceVersion())<6.0):
@@ -147,12 +147,12 @@ def main():
 	SN=storeIP(ips)
 	MAC=getMAC()
 	line=str(SN).strip()+"="+ips+"="+str(MAC)
-#	writeFile(line)
-	readFile('list',str(SN).strip(),ips,str(MAC))
+#	readFile('list',str(SN).strip(),ips,str(MAC))
 	print "you should cut down USB"
 	mkUSBcut()
 	time.sleep(5)	
 	print connectDevice(ips)
+	readFile('list',str(SN).strip(),ips,str(MAC))
 
 
 if __name__ == '__main__':
