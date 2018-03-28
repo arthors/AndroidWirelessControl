@@ -4,12 +4,33 @@ import re
 import time
 import ast
 
+def writeFile(line):
+	f1 = open('list', 'a+')
+	f1.write(line)
+	f1.close()
+
+
+def readFile(files,SN,ip,MAC):
+	f1 = open(files, 'a+')
+	for line in f1.readlines():
+		sn = line.split(line,'=')
+		if (SN == sn):
+			f1.write(SN+"="+ip+"="+MAC)
+		else:
+			writeFile(SN+"="+ip+"="+MAC)
+	f1.close()			
+	
+
 def getDeviceVersion():
 	res = subprocess.Popen('adb shell getprop ro.build.version.release', shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 	res1 = str(res.stdout.readlines()[0])
 	print res1 
 	return res1
 
+def getMAC():
+	res = subprocess.Popen('adb shell cat /sys/class/net/wlan0/address', shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+	result = str(res.stdout.readlines()[0])
+	return result
 
 def getIP():
 	if (ast.literal_eval(getDeviceVersion())<6.0):
@@ -73,7 +94,7 @@ def mkUSBCon():
 def storeIP(ip):
 	res = subprocess.Popen('adb shell getprop ro.serialno',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 	result = res.stdout.readlines()[0]
-	print str(result).strip()+"="+ip
+	return result
 
 
 
@@ -82,7 +103,11 @@ def main():
 	reSet()
 	mkUSBCon()
 	ips=getIP()
-	storeIP(ips)
+	SN=storeIP(ips)
+	MAC=getMAC()
+	line=str(SN).strip()+"="+ips+"="+str(MAC)
+#	writeFile(line)
+	readFile('list',str(SN).strip(),ips,str(MAC))
 	print "you should cut down USB"
 	mkUSBcut()
 	time.sleep(5)	
