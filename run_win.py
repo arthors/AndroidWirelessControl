@@ -1,4 +1,6 @@
+# -*- coding: UTF-8 -*- 
 import os
+import sys
 import subprocess
 import re
 import time
@@ -97,6 +99,7 @@ def connectDevice(ip):
 #	res = subprocess.Popen('adb connect '+str(ip) ,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True)
 	res = subprocess.Popen('adb connect '+str(ip) ,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 	result = str(res.stdout.readlines())
+	print result;
 	return result
 
 def reSet():
@@ -139,7 +142,7 @@ def storeIP(ip):
 
 
 
-def main():
+def newDevices():
 #	mkUSBCon()
 	reSet()
 	mkUSBCon()
@@ -155,5 +158,70 @@ def main():
 	readFile('list',str(SN).strip(),ips,str(MAC))
 
 
+
+
+def getRecord(files):
+	SN=''
+	f = open(files,'r');
+	count = 1;
+	for line in f:
+#		print each line;
+		print str(count)+ '---' +line.strip() + "   \t" + str(count);
+		count = count + 1;
+		if not line:
+			break;
+	Number = input("Please intput your choose:\n eg. 1\n")
+	f.close();
+	try:
+		f = open(files,'r');
+		if int(Number) == 0:
+			getRecord(files)
+		SN=f.readlines()[int(Number)-1].strip().split('=')[0];	
+		f.close();
+	except:
+		print "	error!!	please type "
+		SN=''
+		getRecord(files)
+#	print SN;
+	return SN;
+
+
+def SNgetIP(files,SN):
+	f = open(files,'r')
+	for line in f:
+		if not line:
+			break;
+		if SN == line.split('=')[0].strip():
+			return line.split('=')[1];
+
+def ConnectFfile():
+        SN=getRecord('list');
+	ip=SNgetIP('list',SN);
+	print ip
+	connectDevice(ip)
+
+def usage():
+	print "\t\t\t========================================================="
+	print "\t\t\t|使用方式：python run_win.py list 使用为读取已连接的设备|"
+	print "\t\t\t|          python run_win.py new  使用为建立新连接	|"
+	print "\t\t\t========================================================="
+
+def optChoose():
+	for opt_name in sys.argv:
+		if opt_name == 'list':
+			ConnectFfile();
+			exit()
+		elif opt_name == 'new':
+			newDevices()
+			exit()
+		elif opt_name == 'help':
+			usage()
+		else:
+			usage()
+
+def main():
+	optChoose()
+
+
 if __name__ == '__main__':
-	main()	
+	main()
