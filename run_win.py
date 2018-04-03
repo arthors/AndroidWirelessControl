@@ -201,16 +201,19 @@ def ConnectFfile():
 	connectDevice(ip)
 
 def usage():
-	print "\t\t\t========================================================="
-	print "\t\t\t|使用方式：python run_win.py list 使用为读取已连接的设备|"
-	print "\t\t\t|          python run_win.py new  使用为建立新连接	|"
-	print "\t\t\t========================================================="
+	print "\t\t\t====================================================================================="
+	print "\t\t\t|Usage：   python run_win.py list   --> establish WiFi connection from stored file  |"
+	print "\t\t\t|          python run_win.py new    --> establish Wifi connection during USB mode   |"
+	print "\t\t\t|          python run_win.py restart--> reset adb server                            |"
+	print "\t\t\t====================================================================================="
 
 def optChoose():
 	for opt_name in sys.argv:
 		if opt_name == 'list':
 			ConnectFfile();
 			exit()
+		elif opt_name == 'restart':
+			reSet()
 		elif opt_name == 'new':
 			newDevices()
 			exit()
